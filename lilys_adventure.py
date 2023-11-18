@@ -6,26 +6,10 @@ from random import randint
 
 class Character():
 
-    def __init__(self, name):
+    def __init__(self, name, health):
         self.name = name
-        self.lifepoints = 100
+        self.health = health
         self.strength = randint(0, 150)
-
-    def record_battle_cry(self):
-        '''
-        Recording battle cry to wav file
-        used only for hero characters
-        '''
-        fname = f'battlecry_{self.name}.wav'
-        fs = 44100 # 44.khz
-        duration = 3 # seconds
-
-        # Record audio
-        recording = sd.rec(int(fs * duration), samplerate=fs, channels=2, dtype='int16')
-        sd.wait()
-
-        # Save the recording to a file
-        sf.write(fname, recording, fs)
 
     def battle_cry(self):
         fname = f'battlecry_{self.name}.wav'
@@ -35,6 +19,17 @@ class Character():
 
         while pygame.mixer.music.get_busy():
             pygame.time.Clock.tick(5)
+    
+    def attack(self, target):
+        pass
+
+    def take_dammage(self, damage):
+        pass
+
+class Hero(Character):
+
+    def __init__(self, name, health):
+        super().__init__(name, health)
 
 
 if __name__ == '__main__':
