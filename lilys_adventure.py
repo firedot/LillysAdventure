@@ -9,7 +9,7 @@ class Character():
     def __init__(self, name, health):
         self.name = name
         self.health = health
-        self.strength = randint(0, 150)
+        self.strength = randint(1, 150)
 
     def battle_cry(self):
         fname = f'battlecry_{self.name}.wav'
@@ -20,11 +20,13 @@ class Character():
         while pygame.mixer.music.get_busy():
             pygame.time.Clock.tick(5)
     
-    def attack(self, target):
-        pass
+    def attack(self, target: Character):
+        print(f'{self.name} attacks {target.name}')
+        target.take_damage(randint(0, self.strength))
 
     def take_dammage(self, damage):
-        pass
+        self.health -= damage
+        print(f'{self.name} took {damage} damage. Health: {self.health}')
 
 class Hero(Character):
 
