@@ -42,7 +42,7 @@ class Character():
         self.position_x = x
         self.position_y = y
         self.world = world
-        self.world.matrix[x][y] = self.name
+        #self.world.matrix[x][y] = self.name
 
     def battle_cry(self):
         fname = f'battlecry_{self.name}.wav'
@@ -77,20 +77,23 @@ class Hero(Character):
     # Consider different approaches for this
     # i.e. check for creatures on the positions which you are passing over (not only where you land)
     # fight them and then continute to the final destination
+
+    # Also add check for size of the direction - move should not be out of bounds
     def move(self, direction, count: int):
         for i in range(count):
-            if direction == 'up' and self.y > 0:
-                self.world.matrix[self.y][self.x], self.world.matrix[self.y - 1][self.x] = self.world.matrix[self.y - 1][self.x], self.world.matrix[self.y][self.x]
-                self.y -= 1
-            elif direction == 'down' and self.y < self.world.height - 1:
-                self.world.matrix[self.y][self.x], self.world.matrix[self.y + 1][self.x] = self.world.matrix[self.y + 1][self.x], self.world.matrix[self.y][self.x]
-                self.y += 1
-            elif direction == 'left' and self.x > 0:
-                self.world.matrix[self.y][self.x], self.world.matrix[self.y][self.x - 1] = self.world.matrix[self.y][self.x - 1], self.world.matrix[self.y][self.x]
-                self.x -= 1
-            elif direction == 'right' and self.x < self.world.width - 1:
-                self.world.matrix[self.y][self.x], self.world.matrix[self.y][self.x + 1] = self.world.matrix[self.y][self.x + 1], self.world.matrix[self.y][self.x]
-                self.x += 1
+            #OOPS
+            if direction == 'up' and self.position_y > 0:
+                self.world.matrix[self.position_y][self.position_x], self.world.matrix[self.position_y - 1][self.position_x] = self.world.matrix[self.position_y - 1][self.position_x], self.world.matrix[self.position_y][self.position_x]
+                self.position_y -= 1
+            elif direction == 'down' and self.position_y < self.world.height - 1:
+                self.world.matrix[self.position_y][self.position_x], self.world.matrix[self.position_y + 1][self.position_x] = self.world.matrix[self.position_y + 1][self.position_x], self.world.matrix[self.position_y][self.position_x]
+                self.position_y += 1
+            elif direction == 'left' and self.position_x > 0:
+                self.world.matrix[self.position_y][self.x], self.world.matrix[self.position_y][self.position_x - 1] = self.world.matrix[self.position_y][self.position_x - 1], self.world.matrix[self.position_y][self.position_x]
+                self.position_x -= 1
+            elif direction == 'right' and self.position_x < self.world.width - 1:
+                self.world.matrix[self.position_y][self.position_x], self.world.matrix[self.position_y][self.position_x + 1] = self.world.matrix[self.position_y][self.position_x + 1], self.world.matrix[self.position_y][self.position_x]
+                self.position_x += 1
     
     def heal(self, points):
         print('You healed yourself')
@@ -130,14 +133,17 @@ def generate_world(name: str, size: int):
     width = size
     height = size
     # 
-    number_of_creatures = randint(1, size//3)
+    #number_of_creatures = randint(1, size//3)
+    number_of_creatures = randint(1, size)
     world = World(name, width, height)
-    creatures = []
-    creature_coordinates = []
+    #creatures = []
+    #creature_coordinates = []
     for i in range(number_of_creatures):
         creature = Character(enemy_list[randint(0, len(enemy_list) - 1)], randint(10, 300), randint(0, size - 1), randint(0, size - 1), world)
-        creature_coordinates.append((creature.position_x, creature.position_y))
-        creatures.append(creature)
+        #creature_coordinates.append((creature.position_x, creature.position_y))
+        world.matrix[creature.position_x][creature.position_y] = creature
+
+
 
     return world
 
@@ -153,8 +159,14 @@ def gameplay(player: Hero, world: World):
       play = True
       while play:
         while player.health > 0:
-            move_player()
-            world.get_element_at()
+            move_player(player)
+            current_position = world.get_element_at(player.position_x, player.position_y)
+            print(current_position)
+            print(player.position_x, player.position_y)
+            if type(current_position) == 'Character':
+                print('Yep, there is a monster here')
+                print(current_position.name)
+
 
               
       
@@ -166,3 +178,4 @@ def gameplay(player: Hero, world: World):
 if __name__ == '__main__':
     my_world = generate_world('Nightshade', 50)
     hero = Hero(input('Please enter the name of your hero: '), 150, 1, 1, my_world)
+    gameplay(hero, my_world)
