@@ -4,6 +4,11 @@ import soundfile as sf
 import time
 from random import randint
 
+# Variables
+enemy_list = ['Evil Goat', 'Harpy', 'Horned woperfloff', 
+              'Tree mongler', 'Aligator', 'Fluff Dragon', 'Biter', 
+              'Giant rat', 'Poisonous sheep']
+# Classes
 class Character():
 
     def __init__(self, name: str, health: int, x: int, y: int):
@@ -36,11 +41,20 @@ class Hero(Character):
 
     def __init__(self, name: str, health: int, x: int, y: int):
         super().__init__(name, health)
-        self.luck = randint(1, 10) 
+        self.luck = randint(1, 10)
+    
+    def move(self, direction, count):
+
+        for i in range(count):
+            if direction == 'up' and self.y > 0:
+                self.world.matrix[self.y][self.x], self.world.matrix[self.y -1][self.x]
+                self.y -= 1
+            
 
 class World():
 
-    def __init__(self, width, height):
+    def __init__(self, name, width, height):
+        self.name = name
         self.width = width
         self.height = height
         self.matrix = [[' ' for _ in range(width)] for _ in range(height)]
@@ -48,13 +62,14 @@ class World():
     def print_world(self):
         for row in self.matrix:
             print(' '.join(row))
+# Fucntions
 
 def fight(enemy_name: str, enemy_health: int, player: Hero):
     enemy = Character(enemy_name, enemy_health)
     print(f'Oh, no! You have encounterd a {enemy.name}')
     escaped = False
     while player.health > 0 and enemy.health >0 or escaped:
-        print(f'\nWaht are you going to do?')
+        print(f'\nWhat are you going to do?')
         print('1. Attack')
         print('2. Run away')
 
@@ -75,6 +90,16 @@ def fight(enemy_name: str, enemy_health: int, player: Hero):
             else:
                 print('You have successfully escaped!')
                 escaped = True
+
+def generate_world(name: str, size: int):
+    width = size
+    height = size
+    number_of_creatures = randint(1, size//3)
+    world = World(name, width, height)
+    creatures = []
+    for i in range(number_of_creatures):
+        creature = Character(enemy_list[randint(0, len(enemy_list))], randint(10, 300), randint(1, size), randint(1, size))
+        creatures.append(creature)
 
 if __name__ == '__main__':
     pass
