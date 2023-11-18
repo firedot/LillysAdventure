@@ -19,8 +19,10 @@ class Character():
 
         while pygame.mixer.music.get_busy():
             pygame.time.Clock.tick(5)
+
+    # add record_battlecry and battlecry methods
     
-    def attack(self, target: Character):
+    def attack(self, target):
         print(f'{self.name} attacks {target.name}')
         target.take_damage(randint(0, self.strength))
 
@@ -32,7 +34,36 @@ class Hero(Character):
 
     def __init__(self, name, health):
         super().__init__(name, health)
+        self.luck = randint(1, 10)
+    
 
+
+def fight(enemy_name: str, enemy_health: int, player: Hero):
+    enemy = Character(enemy_name, enemy_health)
+    print(f'Oh, no! You have encounterd a {enemy.name}')
+    escaped = False
+    while player.health > 0 and enemy.health >0 or escaped:
+        print(f'\nWaht are you going to do?')
+        print('1. Attack')
+        print('2. Run away')
+
+        choice = int('Choose what are your action will be (1 or 2): ')
+
+        if choice == 1:
+            if randint(0, 10) > player.luck:
+                enemy.attack(player)
+                player.attack(enemy)
+            else:
+                player.attack(enemy)
+                enemy.attack(player)
+        elif choice == 2:
+            if randint(0, 10) > player.luck:
+                print("Darn! You failed to escape!")
+                print("Prepare to FIGHT!")
+                enemy.attack(player)
+            else:
+                print('You have successfully escaped!')
+                escaped = True
 
 if __name__ == '__main__':
     pass
