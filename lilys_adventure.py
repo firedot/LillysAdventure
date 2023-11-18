@@ -6,10 +6,12 @@ from random import randint
 
 class Character():
 
-    def __init__(self, name, health):
+    def __init__(self, name: str, health: int, x: int, y: int):
         self.name = name
         self.health = health
         self.strength = randint(1, 150)
+        self.position_x = x
+        self.position_y = y
 
     def battle_cry(self):
         fname = f'battlecry_{self.name}.wav'
@@ -32,11 +34,20 @@ class Character():
 
 class Hero(Character):
 
-    def __init__(self, name, health):
+    def __init__(self, name: str, health: int, x: int, y: int):
         super().__init__(name, health)
-        self.luck = randint(1, 10)
-    
+        self.luck = randint(1, 10) 
 
+class World():
+
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.matrix = [[' ' for _ in range(width)] for _ in range(height)]
+    
+    def print_world(self):
+        for row in self.matrix:
+            print(' '.join(row))
 
 def fight(enemy_name: str, enemy_health: int, player: Hero):
     enemy = Character(enemy_name, enemy_health)
