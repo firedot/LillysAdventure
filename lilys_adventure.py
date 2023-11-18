@@ -65,11 +65,11 @@ class Character():
 
 class Hero(Character):
 
-    def __init__(self, name: str, health: int, x: int, y: int):
-        super().__init__(name, health)
+    def __init__(self, name: str, health: int, x: int, y: int, world: World):
+        super().__init__(name, health, x, y, world)
         self.luck = randint(1, 10)
         self.inventory = []
-        self.armor = 0
+        self.armor = 0 
 
     # add characteristics for the hero
     # i.e. skin, eyes, hair, species etc. 
@@ -129,12 +129,13 @@ def fight(enemy_name: str, enemy_health: int, player: Hero):
 def generate_world(name: str, size: int):
     width = size
     height = size
+    # 
     number_of_creatures = randint(1, size//3)
     world = World(name, width, height)
     creatures = []
     creature_coordinates = []
     for i in range(number_of_creatures):
-        creature = Character(enemy_list[randint(0, len(enemy_list))], randint(10, 300), randint(1, size), randint(1, size), world)
+        creature = Character(enemy_list[randint(0, len(enemy_list) - 1)], randint(10, 300), randint(0, size - 1), randint(0, size - 1), world)
         creature_coordinates.append((creature.position_x, creature.position_y))
         creatures.append(creature)
 
@@ -153,7 +154,8 @@ def gameplay(player: Hero, world: World):
       while play:
         while player.health > 0:
             move_player()
-            
+            world.get_element_at()
+
               
       
       
