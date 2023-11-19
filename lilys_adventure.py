@@ -130,7 +130,7 @@ class Gameplay:
         
         '''
 
-        def step(direction, pos, mat, val):
+        def step(self, direction, pos, mat, val):
             #Crude but working.
             if direction == 'up':
                 new_pos = pos[0] - val
@@ -159,12 +159,25 @@ class Gameplay:
                     print(f'values on the new row (x) are: {matrix[pos[0]][new_pos]}')
                     pos[1] = new_pos
                 else: 
-                    print('you are on the border of the matrix') 
+                    print('you are on the border of the matrix')
+
+    def generate_world(self, name: str, size: int):
+        width = size
+        height = size
+        # 
+        #number_of_creatures = randint(1, size//3)
+        number_of_creatures = randint(1, size)
+        world = World(name, width, height)
+        for i in range(number_of_creatures):
+            creature = Character(enemy_list[randint(0, len(enemy_list) - 1)], randint(10, 300), randint(0, size - 1), randint(0, size - 1), world)
+            world.matrix[creature.position_x][creature.position_y] = creature
+
+        return world
 
 # Functions
 
-# TO BE REMOVED
 def fight(enemy: Character, player: Hero):
+    # TO BE REMOVED
     escaped = False
     while player.health > 0 and enemy.health >0 or escaped:
         print(f'\nWhat are you going to do?')
@@ -189,20 +202,8 @@ def fight(enemy: Character, player: Hero):
                 print('You have successfully escaped!')
                 escaped = True
 
-def generate_world(name: str, size: int):
-    width = size
-    height = size
-    # 
-    #number_of_creatures = randint(1, size//3)
-    number_of_creatures = randint(1, size)
-    world = World(name, width, height)
-    for i in range(number_of_creatures):
-        creature = Character(enemy_list[randint(0, len(enemy_list) - 1)], randint(10, 300), randint(0, size - 1), randint(0, size - 1), world)
-        world.matrix[creature.position_x][creature.position_y] = creature
-
-    return world
-
 def move_player(player: Hero, world: World):
+    # TO BE IMPLEMENTED WITHIN THE Gameplay class
     correct = False
     
     while not correct:
@@ -224,6 +225,7 @@ def move_player(player: Hero, world: World):
    # return msg
 
 def gameplay(player: Hero, world: World):
+      # TO BE REMOVED AND REPLACED WITH AN INSTANCE OF THE Gameplay class
       print(f'Welcome {player.name} to the world of {world.name}!')
       print('We need your help to cleanse the realm for the awful monsters which invaded us!')
       print('Please, mighty warrior, help us !!!')
