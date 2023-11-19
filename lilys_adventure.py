@@ -28,7 +28,14 @@ class World():
             return self.matrix[y][x]
         else:
             return None
-
+    
+    def update_world(self):
+        # Clear the previous positions of player and obstacle
+        for row in range(self.height):
+            for col in range(self.width):
+                if (row, col) != (self.player.row, self.player.col) and (row, col) != self.obstacle:
+                    self.matrix[row][col] = ' '
+            
     def print_world(self):
         for row in self.matrix:
             print(' '.join(row))
@@ -39,8 +46,8 @@ class Character():
         self.name = name
         self.health = health
         self.strength = randint(1, 150)
-        self.position_x = x
-        self.position_y = y
+        self.position_x = x # row
+        self.position_y = y # column
         self.world = world
         #self.world.matrix[x][y] = self.name
 
@@ -80,26 +87,72 @@ class Hero(Character):
 
     # Also add check for size of the direction - move should not be out of bounds
     def move(self, direction, count: int):
+
+        '''
+        Movement: 
+        Check the new coordinates, if there is object from class Character
+        initiate a fight, if hero wins, remove Character object from new coordinates, 
+        write her object to new coordinates
+        
+        '''
         for i in range(count):
-            #OOPS
-            if direction == 'up' and self.position_x > 0:
-                self.world.matrix[self.position_x][self.position_y], self.world.matrix[self.position_x][self.position_y - 1] = self.world.matrix[self.position_x][self.position_y - 1], self.world.matrix[self.position_x][self.position_y]
-                self.position_y -= 1
-            elif direction == 'down' and self.position_x < self.world.width - 1:
-                self.world.matrix[self.position_x][self.position_y], self.world.matrix[self.position_x][self.position_y + 1] = self.world.matrix[self.position_x][self.position_y + 1], self.world.matrix[self.position_x][self.position_y]
-                self.position_y += 1
-            elif direction == 'left' and self.position_y > 0:
-                self.world.matrix[self.position_x][self.position_y], self.world.matrix[self.position_x - 1][self.position_y] = self.world.matrix[self.position_x - 1][self.position_y], self.world.matrix[self.position_x][self.position_y]
-                self.position_x -= 1
-            elif direction == 'right' and self.position_y < self.world.height - 1:
-                self.world.matrix[self.position_x][self.position_y], self.world.matrix[self.position_x + 1][self.position_y] = self.world.matrix[self.position_x + 1][self.position_y], self.world.matrix[self.position_x][self.position_y]
-                self.position_x += 1
+            try:
+                new_row, new_col = self.position_x, self.position_y
+
+                if direction == 'up':
+                    new_row -= 1
+                elif direction == 'down':
+                    new_row += 1
+                elif direction == 'left':
+                    new_col -= 1
+                elif direction == 'right':
+                    new_col += 1
+                # Check if the new position is within the bounds of the matrix
+                if 0 <= new_row < self.world.height and 0 <= new_col < self.world.width:
+                    # Update the position only if within bounds
+                    self.row, self.col = new_row, new_col
+
+                    self.world.update_matrix()
+                else:
+                    raise ValueError("Invalid move. Out of bounds.")
+
+            except ValueError as e:
+                print(f"Error: {e}")
            
     
     def heal(self, points):
         print('You healed yourself')
         self.healths += points
         print(f'Your health is: {self.health}')
+'''
+implement at some point
+class Gameplay:
+    @staticmethod
+    def fight(enemy: Character, player: Hero):
+        escaped = False
+        while player.health > 0 and enemy.health > 0 and not escaped:
+            print('\nWhat are you going to do?')
+            print('1. Attack')
+            print('2. Run away')
+
+            choice = int(input('Choose what your action will be (1 or 2): '))
+
+            if choice == 1:
+                if randint(0, 10) > player.luck:
+                    enemy.attack(player)
+                    player.attack(enemy)
+                else:
+                    player.attack(enemy)
+                    enemy.attack(player)
+            elif choice == 2:
+                if randint(0, 10) > player.luck:
+                    print("Darn! You failed to escape!")
+                    print("Prepare to FIGHT!")
+                    enemy.attack(player)
+                else:
+                    print('You have successfully escaped!')
+                    escaped = True
+'''
 
 # Functions
 
@@ -153,7 +206,7 @@ def move_player(player: Hero, world: World):
             msg = 'OK'
         else:
             msg = 'NOK'
-            print("Moves should be a number greater than 0 and no bigger than the world size!")
+            print(f"Moves should be a number greater than 0 and no bigger than the world size ({world.height})")
         
         if type(direction) is str and direction.lower() in ['up', 'down', 'left', 'right'] and msg == 'OK':
             player.move(direction, moves)
@@ -194,5 +247,5 @@ def gameplay(player: Hero, world: World):
 
 if __name__ == '__main__':
     my_world = generate_world('Nightshade', 5)
-    hero = Hero(input('Please enter the name of your hero: '), 150, 1, 1, my_world)
+    hero = Hero(input('Please enter the name of your hero: '), 150, 0, 0, my_world)
     gameplay(hero, my_world)
