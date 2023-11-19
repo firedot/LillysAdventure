@@ -89,47 +89,11 @@ class Hero(Character):
     # i.e. check for creatures on the positions which you are passing over (not only where you land)
     # fight them and then continute to the final destination
 
-    # Also add check for size of the direction - move should not be out of bounds
-    def move(self, direction, count: int):
-
-        '''
-        Movement: 
-        Check the new coordinates, if there is object from class Character
-        initiate a fight, if hero wins, remove Character object from new coordinates, 
-        write her object to new coordinates
-        
-        '''
-        for i in range(count):
-            try:
-                new_row, new_col = self.position_x, self.position_y
-
-                if direction == 'up':
-                    new_row -= 1
-                elif direction == 'down':
-                    new_row += 1
-                elif direction == 'left':
-                    new_col -= 1
-                elif direction == 'right':
-                    new_col += 1
-                # Check if the new position is within the bounds of the matrix
-                if 0 <= new_row < self.world.height and 0 <= new_col < self.world.width:
-                    # Update the position only if within bounds
-                    self.row, self.col = new_row, new_col
-
-                    self.world.update_world()
-                else:
-                    raise ValueError("Invalid move. Out of bounds.")
-
-            except ValueError as e:
-                print(f"Error: {e}")
-           
-    
     def heal(self, points):
         print('You healed yourself')
         self.healths += points
         print(f'Your health is: {self.health}')
-'''
-implement at some point
+
 class Gameplay:
     @staticmethod
     def fight(enemy: Character, player: Hero):
@@ -156,10 +120,50 @@ class Gameplay:
                 else:
                     print('You have successfully escaped!')
                     escaped = True
-'''
+
+        '''
+        Movement: 
+        Check the new coordinates, if there is object from class Character
+        initiate a fight, if hero wins, remove Character object from new coordinates, 
+        write her object to new coordinates
+        Also add check for size of the direction - move should not be out of bounds
+        
+        '''
+
+        def step(direction, pos, mat, val):
+            #Crude but working.
+            if direction == 'up':
+                new_pos = pos[0] - val
+                if new_pos > 0 and new_pos <= (len(mat) - 1):
+                    print(f'values on the new row (x) are: {matrix[new_pos]}')
+                    pos[0] = new_pos
+                else: 
+                    print('you are on the border of the matrix')
+            elif direction == 'down':
+                new_pos = pos[0] + val
+                if new_pos <= (len(mat) - 1):
+                    print(f'values on the new row (x) are: {matrix[new_pos]}')
+                    pos[0] = new_pos
+                else: 
+                    print('you are on the border of the matrix') 
+            elif direction == 'left':
+                new_pos = pos[1] - val
+                if 0 <= new_pos <= (len(mat[pos[0]]) - 1): 
+                    print(f'values on the new row (x) are: {matrix[pos[0]][new_pos]}')
+                    pos[1] = new_pos
+                else: 
+                    print('you are on the border of the matrix') 
+            elif direction == 'right':
+                new_pos = pos[1] + val
+                if 0 >= new_pos  <= (len(mat[pos[0]]) - 1): 
+                    print(f'values on the new row (x) are: {matrix[pos[0]][new_pos]}')
+                    pos[1] = new_pos
+                else: 
+                    print('you are on the border of the matrix') 
 
 # Functions
 
+# TO BE REMOVED
 def fight(enemy: Character, player: Hero):
     escaped = False
     while player.health > 0 and enemy.health >0 or escaped:
