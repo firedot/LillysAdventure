@@ -29,12 +29,16 @@ class World():
         else:
             return None
     
-    def update_world(self):
+    def update_world(self, player, npc):
         # Clear the previous positions of player and obstacle
         for row in range(self.height):
             for col in range(self.width):
                 if (row, col) != (self.player.row, self.player.col) and (row, col) != self.obstacle:
                     self.matrix[row][col] = ' '
+
+        self.matrix[self.player.position_x][self.player.position_y] = player
+        row, col = self.npc.position_x, self.npc.position_y
+        self.matrix[row][col] = npc
             
     def print_world(self):
         for row in self.matrix:
@@ -112,7 +116,7 @@ class Hero(Character):
                     # Update the position only if within bounds
                     self.row, self.col = new_row, new_col
 
-                    self.world.update_matrix()
+                    self.world.update_world()
                 else:
                     raise ValueError("Invalid move. Out of bounds.")
 
@@ -192,8 +196,6 @@ def generate_world(name: str, size: int):
         creature = Character(enemy_list[randint(0, len(enemy_list) - 1)], randint(10, 300), randint(0, size - 1), randint(0, size - 1), world)
         world.matrix[creature.position_x][creature.position_y] = creature
 
-
-
     return world
 
 def move_player(player: Hero, world: World):
@@ -217,10 +219,6 @@ def move_player(player: Hero, world: World):
 
    # return msg
 
-        
-        
-    
-
 def gameplay(player: Hero, world: World):
       print(f'Welcome {player.name} to the world of {world.name}!')
       print('We need your help to cleanse the realm for the awful monsters which invaded us!')
@@ -233,16 +231,10 @@ def gameplay(player: Hero, world: World):
             print(current_position)
             print(player.position_x, player.position_y)
             if isinstance(current_position, Character):
-                print(f'Oh, no! There is a ferotios {current_position.name} here!')
+                print(f'Oh, no! There is a ferocious {current_position.name} here!')
                 print('Prepare to fight!')
                 print(current_position.name)
 
-
-              
-      
-      
-
-      
       pass
 
 if __name__ == '__main__':
