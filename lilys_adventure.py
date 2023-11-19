@@ -84,10 +84,6 @@ class Hero(Character):
 
     # add characteristics for the hero
     # i.e. skin, eyes, hair, species etc. 
-    
-    # Consider different approaches for this
-    # i.e. check for creatures on the positions which you are passing over (not only where you land)
-    # fight them and then continute to the final destination
 
     def heal(self, points):
         print('You healed yourself')
@@ -127,10 +123,14 @@ class Gameplay:
         initiate a fight, if hero wins, remove Character object from new coordinates, 
         write her object to new coordinates
         Also add check for size of the direction - move should not be out of bounds
+ 
+        # Consider different approaches for this
+        # i.e. check for creatures on the positions which you are passing over (not only where you land)
+        # fight them and then continute to the final destination
         
         '''
 
-        def step(self, direction, pos, mat, val):
+        def move_hero(self, direction, pos, mat, val):
             #Crude but working.
             if direction == 'up':
                 new_pos = pos[0] - val
