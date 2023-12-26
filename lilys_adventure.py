@@ -130,49 +130,57 @@ class Gameplay:
         
         '''
 
-        def move_hero(self, direction, pos, mat, val):
-            #Crude but working.
-            if direction == 'up':
-                new_pos = pos[0] - val
-                if new_pos > 0 and new_pos <= (len(mat) - 1):
-                    print(f'values on the new row (x) are: {matrix[new_pos]}')
-                    pos[0] = new_pos
-                else: 
-                    print('you are on the border of the matrix')
-            elif direction == 'down':
-                new_pos = pos[0] + val
-                if new_pos <= (len(mat) - 1):
-                    print(f'values on the new row (x) are: {matrix[new_pos]}')
-                    pos[0] = new_pos
-                else: 
-                    print('you are on the border of the matrix') 
-            elif direction == 'left':
-                new_pos = pos[1] - val
-                if 0 <= new_pos <= (len(mat[pos[0]]) - 1): 
-                    print(f'values on the new row (x) are: {matrix[pos[0]][new_pos]}')
-                    pos[1] = new_pos
-                else: 
-                    print('you are on the border of the matrix') 
-            elif direction == 'right':
-                new_pos = pos[1] + val
-                if 0 >= new_pos  <= (len(mat[pos[0]]) - 1): 
-                    print(f'values on the new row (x) are: {matrix[pos[0]][new_pos]}')
-                    pos[1] = new_pos
-                else: 
-                    print('you are on the border of the matrix')
+        @staticmethod
+        def move_hero(hero_pos, wrld):
+            while True:
+                direction = input('Enter the direction (up, down, left, right): ')
 
-    def generate_world(self, name: str, size: int):
-        width = size
-        height = size
-        # 
-        #number_of_creatures = randint(1, size//3)
-        number_of_creatures = randint(1, size)
-        world = World(name, width, height)
-        for i in range(number_of_creatures):
-            creature = Character(enemy_list[randint(0, len(enemy_list) - 1)], randint(10, 300), randint(0, size - 1), randint(0, size - 1), world)
-            world.matrix[creature.position_x][creature.position_y] = creature
+                # Validate the direction input
+                if direction not in ['up', 'down', 'left', 'right']:
+                    print('Invalid direction. Please enter one of: up, down, left, right.')
+                    continue
 
-        return world
+                try:
+                    moves = int(input('Enter how many squares to move: '))
+
+                    # Validate the number of moves input
+                    if moves <= 0:
+                        print('Number of moves must be a positive integer.')
+                        continue
+
+                    if direction == 'up':
+                        new_hero_pos = hero_pos[0] - moves
+                        if new_hero_pos >= 0 and new_hero_pos <= (len(wrld) - 1):
+                            print(f'Values on the new row (x) are: {wrld[new_hero_pos]}')
+                            hero_pos[0] = new_hero_pos
+                        else:
+                            print('You have reached the border of the realm!')
+                    elif direction == 'down':
+                        new_hero_pos = hero_pos[0] + moves
+                        if new_hero_pos < len(wrld):
+                            print(f'Values on the new row (x) are: {wrld[new_hero_pos]}')
+                            hero_pos[0] = new_hero_pos
+                        else:
+                            print('You have reached the border of the realm!')
+                    elif direction == 'left':
+                        new_hero_pos = hero_pos[1] - moves
+                        if 0 <= new_hero_pos <= (len(wrld[hero_pos[0]]) - 1):
+                            print(f'Values on the new row (x) are: {wrld[hero_pos[0]][new_hero_pos]}')
+                            hero_pos[1] = new_hero_pos
+                        else:
+                            print('You have reached the border of the realm!')
+                    elif direction == 'right':
+                        new_hero_pos = hero_pos[1] + moves
+                        if 0 <= new_hero_pos <= (len(wrld[hero_pos[0]]) - 1):
+                            print(f'Values on the new row (x) are: {wrld[hero_pos[0]][new_hero_pos]}')
+                            hero_pos[1] = new_hero_pos
+                        else:
+                            print('You have reached the border of the realm!')
+
+                    break  # Exit the loop when valid input is received
+
+                except ValueError:
+                    print('Invalid input. Number of moves must be a positive integer.')
 
 # Functions
 
@@ -224,6 +232,22 @@ def move_player(player: Hero, world: World):
 
    # return msg
 
+def generate_world():
+        name = str(input('Please enter the name of your new realm: '))
+        size = int(input('Please enter an integer to define the size of your world: '))
+        width = size
+        height = size
+        # 
+        #number_of_creatures = randint(1, size//3)
+        number_of_creatures = randint(1, size)
+        world = World(name, width, height)
+        for i in range(number_of_creatures):
+            creature = Character(enemy_list[randint(0, len(enemy_list) - 1)], randint(10, 300), randint(0, size - 1), randint(0, size - 1), world)
+            world.matrix[creature.position_x][creature.position_y] = creature
+
+        return world
+
+
 def gameplay(player: Hero, world: World):
       # TO BE REMOVED AND REPLACED WITH AN INSTANCE OF THE Gameplay class
       print(f'Welcome {player.name} to the world of {world.name}!')
@@ -244,6 +268,6 @@ def gameplay(player: Hero, world: World):
       pass
 
 if __name__ == '__main__':
-    my_world = generate_world('Nightshade', 5)
+    my_world = generate_world()
     hero = Hero(input('Please enter the name of your hero: '), 150, 0, 0, my_world)
     gameplay(hero, my_world)
