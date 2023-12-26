@@ -68,7 +68,7 @@ class Character():
     
     def attack(self, target):
         print(f'{self.name} attacks {target.name}')
-        target.take_damage(randint(0, self.strength))
+        target.take_dammage(randint(0, self.strength))
 
     def take_dammage(self, damage):
         self.health -= damage
@@ -80,7 +80,8 @@ class Hero(Character):
         super().__init__(name, health, x, y, world)
         self.luck = randint(1, 10)
         self.inventory = []
-        self.armor = 0 
+        self.armor = 0
+        self.position = [x, y]
 
     # add characteristics for the hero
     # i.e. skin, eyes, hair, species etc. 
@@ -130,107 +131,89 @@ class Gameplay:
         
         '''
 
-        @staticmethod
-        def move_hero(hero_pos, wrld):
-            while True:
-                direction = input('Enter the direction (up, down, left, right): ')
+    @staticmethod
+    def move_hero(hero: Hero, wrld):
+        # wrld should be a matrix
+        hero_pos = hero.position
+        while True:
+            direction = input('Enter the direction (up, down, left, right): ')
 
-                # Validate the direction input
-                if direction not in ['up', 'down', 'left', 'right']:
-                    print('Invalid direction. Please enter one of: up, down, left, right.')
+            # Validate the direction input
+            if direction not in ['up', 'down', 'left', 'right']:
+                print('Invalid direction. Please enter one of: up, down, left, right.')
+                continue
+
+            try:
+                moves = int(input('Enter how many squares to move: '))
+
+                # Validate the number of moves input
+                if moves <= 0:
+                    print('Number of moves must be a positive integer.')
                     continue
 
-                try:
-                    moves = int(input('Enter how many squares to move: '))
+                if direction == 'up':
+                    new_hero_pos = hero_pos[0] - moves
+                    if new_hero_pos >= 0 and new_hero_pos <= (len(wrld) - 1):
+                        print(f'Values on the new row (x) are: {wrld[new_hero_pos]}')
+                        new_coordinates = wrld[new_hero_pos]
+                        if type(new_coordinates) == Character:
+                            while hero.health > 0 and new_coordinates.health > 0:
+                                Gameplay.fight(new_coordinates, hero)
+                                if hero.health <= 0:
+                                    print('YOU WERE DEFEATED!!!')
+                                    exit(0)
+                        hero_pos[0] = new_hero_pos
+                    else:
+                        print('You have reached the border of the realm!')
+                elif direction == 'down':
+                    new_hero_pos = hero_pos[0] + moves
+                    if new_hero_pos < len(wrld):
+                        print(f'Values on the new row (x) are: {wrld[new_hero_pos]}')
+                        new_coordinates = wrld[new_hero_pos]
+                        if type(new_coordinates) == Character:
+                            while hero.health > 0 and new_coordinates.health > 0:
+                                Gameplay.fight(new_coordinates, hero)
+                                if hero.health <= 0:
+                                    print('YOU WERE DEFEATED!!!')
+                                    exit(0)
+                        hero_pos[0] = new_hero_pos
+                    else:
+                        print('You have reached the border of the realm!')
+                elif direction == 'left':
+                    new_hero_pos = hero_pos[1] - moves
+                    if 0 <= new_hero_pos <= (len(wrld[hero_pos[0]]) - 1):
+                        print(f'Values on the new position (x) are: {wrld[hero_pos[0]][new_hero_pos]}')
+                        new_coordinates = wrld[hero_pos[0]][new_hero_pos]
+                        if type(new_coordinates) == Character:
+                            while hero.health > 0 and new_coordinates.health > 0:
+                                Gameplay.fight(new_coordinates, hero)
+                                if hero.health <= 0:
+                                    print('YOU WERE DEFEATED!!!')
+                                    exit(0)
+                        hero_pos[1] = new_hero_pos
+                    else:
+                        print('You have reached the border of the realm!')
+                elif direction == 'right':
+                    new_hero_pos = hero_pos[1] + moves
+                    if 0 <= new_hero_pos <= (len(wrld[hero_pos[0]]) - 1):
+                        print(f'Values on the new row (x) are: {wrld[hero_pos[0]][new_hero_pos]}')
+                        new_coordinates = wrld[hero_pos[0]][new_hero_pos]
+                        if type(new_coordinates) == Character:
+                            while hero.health > 0 and new_coordinates.health > 0:
+                                Gameplay.fight(new_coordinates, hero)
+                                if hero.health <= 0:
+                                    print('YOU WERE DEFEATED!!!')
+                                    exit(0)
+                        hero_pos[1] = new_hero_pos
+                    else:
+                        print('You have reached the border of the realm!')
 
-                    # Validate the number of moves input
-                    if moves <= 0:
-                        print('Number of moves must be a positive integer.')
-                        continue
+                break  # Exit the loop when valid input is received
 
-                    if direction == 'up':
-                        new_hero_pos = hero_pos[0] - moves
-                        if new_hero_pos >= 0 and new_hero_pos <= (len(wrld) - 1):
-                            print(f'Values on the new row (x) are: {wrld[new_hero_pos]}')
-                            hero_pos[0] = new_hero_pos
-                        else:
-                            print('You have reached the border of the realm!')
-                    elif direction == 'down':
-                        new_hero_pos = hero_pos[0] + moves
-                        if new_hero_pos < len(wrld):
-                            print(f'Values on the new row (x) are: {wrld[new_hero_pos]}')
-                            hero_pos[0] = new_hero_pos
-                        else:
-                            print('You have reached the border of the realm!')
-                    elif direction == 'left':
-                        new_hero_pos = hero_pos[1] - moves
-                        if 0 <= new_hero_pos <= (len(wrld[hero_pos[0]]) - 1):
-                            print(f'Values on the new row (x) are: {wrld[hero_pos[0]][new_hero_pos]}')
-                            hero_pos[1] = new_hero_pos
-                        else:
-                            print('You have reached the border of the realm!')
-                    elif direction == 'right':
-                        new_hero_pos = hero_pos[1] + moves
-                        if 0 <= new_hero_pos <= (len(wrld[hero_pos[0]]) - 1):
-                            print(f'Values on the new row (x) are: {wrld[hero_pos[0]][new_hero_pos]}')
-                            hero_pos[1] = new_hero_pos
-                        else:
-                            print('You have reached the border of the realm!')
-
-                    break  # Exit the loop when valid input is received
-
-                except ValueError:
-                    print('Invalid input. Number of moves must be a positive integer.')
+            except ValueError:
+                print('Invalid input. Number of moves must be a positive integer.')
 
 # Functions
-
-def fight(enemy: Character, player: Hero):
-    # TO BE REMOVED
-    escaped = False
-    while player.health > 0 and enemy.health >0 or escaped:
-        print(f'\nWhat are you going to do?')
-        print('1. Attack')
-        print('2. Run away')
-
-        choice = int('Choose what are your action will be (1 or 2): ')
-
-        if choice == 1:
-            if randint(0, 10) > player.luck:
-                enemy.attack(player)
-                player.attack(enemy)
-            else:
-                player.attack(enemy)
-                enemy.attack(player)
-        elif choice == 2:
-            if randint(0, 10) > player.luck:
-                print("Darn! You failed to escape!")
-                print("Prepare to FIGHT!")
-                enemy.attack(player)
-            else:
-                print('You have successfully escaped!')
-                escaped = True
-
-def move_player(player: Hero, world: World):
-    # TO BE IMPLEMENTED WITHIN THE Gameplay class
-    correct = False
-    
-    while not correct:
-        moves = int(input('Enter how many moves you make: '))
-        direction = str(input('Enter in which direction you want to travel: '))
-        if (type(moves) is int and moves > 0) and (world.height >= moves <= world.width):
-            msg = 'OK'
-        else:
-            msg = 'NOK'
-            print(f"Moves should be a number greater than 0 and no bigger than the world size ({world.height})")
-        
-        if type(direction) is str and direction.lower() in ['up', 'down', 'left', 'right'] and msg == 'OK':
-            player.move(direction, moves)
-            msg = f'You moved {moves} squares {direction}'
-            correct = True
-        else: 
-            print('Direction should be one of the following text entries: up, down, left, right')
-
-   # return msg
 
 def generate_world():
         name = str(input('Please enter the name of your new realm: '))
@@ -247,27 +230,9 @@ def generate_world():
 
         return world
 
-
-def gameplay(player: Hero, world: World):
-      # TO BE REMOVED AND REPLACED WITH AN INSTANCE OF THE Gameplay class
-      print(f'Welcome {player.name} to the world of {world.name}!')
-      print('We need your help to cleanse the realm for the awful monsters which invaded us!')
-      print('Please, mighty warrior, help us !!!')
-      play = True
-      while play:
-        while player.health > 0:
-            move_player(player, world)
-            current_position = world.get_element_at(player.position_x, player.position_y)
-            print(current_position)
-            print(player.position_x, player.position_y)
-            if isinstance(current_position, Character):
-                print(f'Oh, no! There is a ferocious {current_position.name} here!')
-                print('Prepare to fight!')
-                print(current_position.name)
-
-      pass
-
 if __name__ == '__main__':
     my_world = generate_world()
     hero = Hero(input('Please enter the name of your hero: '), 150, 0, 0, my_world)
-    gameplay(hero, my_world)
+    
+    while hero.health > 0:
+        Gameplay.move_hero(hero, my_world.matrix)
